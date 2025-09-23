@@ -72,4 +72,3 @@ We welcome contributions! Please see the [main WaspBot repository](https://githu
 ## License
 
 This project is part of WaspBot. Please refer to the [main repository](https://github.com/WaspBot) for licensing information.
-
