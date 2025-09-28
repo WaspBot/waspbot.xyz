@@ -67,7 +67,7 @@ public/
 
 ## Contributing
 
-We welcome contributions! Please see the [main WaspBot repository](https://github.com/WaspBot) for contribution guidelines.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for detailed information on how to get started.
 
 ## License
 
