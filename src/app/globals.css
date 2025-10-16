@@ -128,7 +128,7 @@
   [role="link"] {
     /* remove default outline but show an accessible focus ring on keyboard focus */
     @apply outline-none;
-    @apply focus-visible:ring-2 focus-visible:ring-ring;
+    @apply focus-visible:ring-ring focus-visible:ring-2;
   }
   body {
     @apply bg-background text-foreground;
