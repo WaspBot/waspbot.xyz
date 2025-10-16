@@ -116,6 +116,20 @@
   * {
     @apply border-border;
   }
+
+  /* Ensure interactive elements show a visible focus ring for keyboard users */
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  summary,
+  [role="button"],
+  [role="link"] {
+    /* remove default outline but show an accessible focus ring on keyboard focus */
+    @apply outline-none;
+    @apply focus-visible:ring-2 focus-visible:ring-ring;
+  }
   body {
     @apply bg-background text-foreground;
   }
