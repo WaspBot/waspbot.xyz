@@ -25,13 +25,22 @@ const badgeVariants = cva(
   }
 );
 
-function Badge({
-  className,
-  variant,
-  asChild = false,
-  ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof badgeVariants> {
+  /**
+   * If true, the component will be rendered as a child of the element passed to the `asChild` prop.
+   * @default false
+   */
+  asChild?: boolean;
+}
+
+/**
+ * Renders a badge component with various styles and variants.
+ * @param {BadgeProps} props - The props for the badge component.
+ * @returns {JSX.Element} The rendered badge component.
+ */
+function Badge({ className, variant, asChild = false, ...props }: BadgeProps) {
   const Comp = asChild ? Slot : "span";
 
   return (
