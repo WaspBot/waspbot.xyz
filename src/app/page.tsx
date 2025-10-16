@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
   return (
@@ -26,6 +27,16 @@ export default function Home() {
         </ol>
 
         <div className="flex flex-col items-center gap-4 sm:flex-row">
+          <Card className="w-[300px]">
+            <CardHeader>
+              <CardTitle>Test Card</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>
+                This is a test card to demonstrate className and ref forwarding.
+              </p>
+            </CardContent>
+          </Card>
           <a
             className="bg-foreground text-background flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent px-4 text-sm font-medium transition-colors hover:bg-[#383838] sm:h-12 sm:w-auto sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
             href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
