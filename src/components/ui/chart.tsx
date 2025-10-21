@@ -81,6 +81,16 @@ function ChartContainer<TData extends Record<string, unknown>>({
     );
   }
 
+  const childrenWithInjectedData = React.Children.map(children, child => {
+    if (
+      React.isValidElement(child) &&
+      (child.props as any).data === undefined
+    ) {
+      return React.cloneElement(child, { data } as any);
+    }
+    return child;
+  });
+
   return (
     <ChartContext.Provider value={{ config }}>
       <div
@@ -94,7 +104,11 @@ function ChartContainer<TData extends Record<string, unknown>>({
       >
         <ChartStyle id={chartId} config={config} />
         <RechartsPrimitive.ResponsiveContainer>
-          {children}
+          {Array.isArray(childrenWithInjectedData) ? (
+            <React.Fragment>{childrenWithInjectedData}</React.Fragment>
+          ) : (
+            childrenWithInjectedData
+          )}
         </RechartsPrimitive.ResponsiveContainer>
       </div>
     </ChartContext.Provider>
