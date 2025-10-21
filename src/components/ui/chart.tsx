@@ -81,15 +81,32 @@ function ChartContainer<TData extends Record<string, unknown>>({
     );
   }
 
-  const childrenWithInjectedData = React.Children.map(children, child => {
-    if (
-      React.isValidElement(child) &&
-      (child.props as any).data === undefined
-    ) {
-      return React.cloneElement(child, { data } as any);
+  const injectData = (child: React.ReactNode): React.ReactNode => {
+    if (!React.isValidElement(child)) return child;
+
+    // Handle fragments by recursing into their children
+    if (child.type === React.Fragment) {
+      const fragChildren = React.Children.map(child.props.children, (c) =>
+        injectData(c)
+      );
+      return React.cloneElement(child as React.ReactElement<any>, {
+        ...child.props,
+        children: fragChildren,
+      });
     }
-    return child;
-  });
+
+    // If child already has a data prop, leave it alone
+    const childProps: any = (child as any).props;
+    if (childProps && childProps.data !== undefined) return child;
+
+    // Inject data prop (cast to any to avoid strict typings)
+    return React.cloneElement(
+      child as React.ReactElement<any>,
+      { ...(childProps || {}), data } as any
+    );
+  };
+
+  const enhancedChildren = React.Children.map(children, injectData);
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -104,10 +121,10 @@ function ChartContainer<TData extends Record<string, unknown>>({
       >
         <ChartStyle id={chartId} config={config} />
         <RechartsPrimitive.ResponsiveContainer>
-          {Array.isArray(childrenWithInjectedData) ? (
-            <React.Fragment>{childrenWithInjectedData}</React.Fragment>
+          {Array.isArray(enhancedChildren) ? (
+            <React.Fragment>{enhancedChildren}</React.Fragment>
           ) : (
-            childrenWithInjectedData
+            enhancedChildren
           )}
         </RechartsPrimitive.ResponsiveContainer>
       </div>
