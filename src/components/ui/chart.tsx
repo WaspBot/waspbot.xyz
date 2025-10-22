@@ -34,20 +34,79 @@ function useChart() {
   return context;
 }
 
-function ChartContainer({
+function ChartContainer<TData extends Record<string, unknown>>({
   id,
   className,
   children,
   config,
+  data,
   ...props
 }: React.ComponentProps<"div"> & {
   config: ChartConfig;
   children: React.ComponentProps<
     typeof RechartsPrimitive.ResponsiveContainer
   >["children"];
+  data?: TData[];
 }) {
   const uniqueId = React.useId();
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+
+  if (!data || data.length === 0) {
+    return (
+      <div
+        data-slot="chart"
+        data-chart={chartId}
+        className={cn(
+          "text-muted-foreground flex aspect-video items-center justify-center",
+          className
+        )}
+        {...props}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-8 w-8"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 17v-2m3 2v-4m3 2v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+        <span className="ml-2">No data available</span>
+      </div>
+    );
+  }
+
+  const injectData = (child: React.ReactNode): React.ReactNode => {
+    if (!React.isValidElement(child)) return child;
+
+    // Handle fragments by recursing into their children
+    if (child.type === React.Fragment) {
+      const fragChildren = React.Children.map(child.props.children, (c) =>
+        injectData(c)
+      );
+      return React.cloneElement(child as React.ReactElement<any>, {
+        ...child.props,
+        children: fragChildren,
+      });
+    }
+
+    // If child already has a data prop, leave it alone
+    const childProps: any = (child as any).props;
+    if (childProps && childProps.data !== undefined) return child;
+
+    // Inject data prop (cast to any to avoid strict typings)
+    return React.cloneElement(
+      child as React.ReactElement<any>,
+      { ...(childProps || {}), data } as any
+    );
+  };
+
+  const enhancedChildren = React.Children.map(children, injectData);
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -62,7 +121,11 @@ function ChartContainer({
       >
         <ChartStyle id={chartId} config={config} />
         <RechartsPrimitive.ResponsiveContainer>
-          {children}
+          {Array.isArray(enhancedChildren) ? (
+            <React.Fragment>{enhancedChildren}</React.Fragment>
+          ) : (
+            enhancedChildren
+          )}
         </RechartsPrimitive.ResponsiveContainer>
       </div>
     </ChartContext.Provider>
