@@ -8,33 +8,39 @@ import { cn } from "@/lib/utils";
 function Popover({
   children,
   open: openProp,
+  defaultOpen,
   onOpenChange,
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Root> & {
   open?: boolean;
+  defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = React.useState(openProp !== undefined ? openProp : false);
+  const isControlled = openProp !== undefined;
+  const [open, setOpen] = React.useState<boolean>(() =>
+    isControlled ? (openProp as boolean) : (defaultOpen ?? false)
+  );
 
   React.useEffect(() => {
-    if (openProp !== undefined) {
-      setOpen(openProp);
+    if (isControlled) {
+      setOpen(openProp as boolean);
     }
-  }, [openProp]);
+  }, [isControlled, openProp]);
 
   const handleOpenChange = React.useCallback(
     (newOpen: boolean) => {
-      setOpen(newOpen);
+      if (!isControlled) {
+        setOpen(newOpen);
+      }
       onOpenChange?.(newOpen);
     },
-    [onOpenChange]
+    [isControlled, onOpenChange]
   );
 
   return (
     <PopoverPrimitive.Root
       data-slot="popover"
-      open={open}
-      onOpenChange={handleOpenChange}
+      {...(isControlled ? { open, onOpenChange: handleOpenChange } : { defaultOpen, onOpenChange: handleOpenChange })}
       {...props}
     >
       {children}
