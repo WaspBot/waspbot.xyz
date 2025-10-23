@@ -5,6 +5,22 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
 
+interface PopoverContextValue {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  triggerRef: React.MutableRefObject<HTMLElement | null>;
+}
+
+const PopoverContext = React.createContext<PopoverContextValue | null>(null);
+
+function usePopoverContext() {
+  const context = React.useContext(PopoverContext);
+  if (!context) {
+    throw new Error("usePopoverContext must be used within a PopoverProvider");
+  }
+  return context;
+}
+
 function Popover({
   children,
   open: openProp,
@@ -17,67 +33,89 @@ function Popover({
   onOpenChange?: (open: boolean) => void;
 }) {
   const isControlled = openProp !== undefined;
-  const [open, setOpen] = React.useState<boolean>(() =>
-    isControlled ? (openProp as boolean) : (defaultOpen ?? false)
+  const [internalOpen, setInternalOpen] = React.useState<boolean>(
+    defaultOpen ?? false
   );
 
-  React.useEffect(() => {
-    if (isControlled) {
-      setOpen(openProp as boolean);
-    }
-  }, [isControlled, openProp]);
+  const open = isControlled ? (openProp as boolean) : internalOpen;
 
   const handleOpenChange = React.useCallback(
     (newOpen: boolean) => {
       if (!isControlled) {
-        setOpen(newOpen);
+        setInternalOpen(newOpen);
       }
       onOpenChange?.(newOpen);
     },
     [isControlled, onOpenChange]
   );
 
+  const triggerRef = React.useRef<HTMLElement | null>(null);
+
+  const contextValue = React.useMemo(
+    () => ({ open, onOpenChange: handleOpenChange, triggerRef }),
+    [open, handleOpenChange, triggerRef]
+  );
+
   return (
-    <PopoverPrimitive.Root
-      data-slot="popover"
-      {...(isControlled ? { open, onOpenChange: handleOpenChange } : { defaultOpen, onOpenChange: handleOpenChange })}
-      {...props}
-    >
-      {children}
-    </PopoverPrimitive.Root>
+    <PopoverContext.Provider value={contextValue}>
+      <PopoverPrimitive.Root
+        data-slot="popover"
+        open={open}
+        onOpenChange={handleOpenChange}
+        {...props}
+      >
+        {children}
+      </PopoverPrimitive.Root>
+    </PopoverContext.Provider>
   );
 }
 
-function PopoverTrigger({
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
-}
+const PopoverTrigger = React.forwardRef<
+  React.ElementRef<typeof PopoverPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger>
+>(({ onPointerDown, ...props }, forwardedRef) => {
+  const { triggerRef } = usePopoverContext();
+
+  const handlePointerDown = React.useCallback(
+    (event: React.PointerEvent<HTMLButtonElement>) => {
+      triggerRef.current = event.currentTarget;
+      onPointerDown?.(event);
+    },
+    [onPointerDown, triggerRef]
+  );
+
+  return (
+    <PopoverPrimitive.Trigger
+      ref={forwardedRef}
+      data-slot="popover-trigger"
+      onPointerDown={handlePointerDown}
+      {...props}
+    />
+  );
+});
+
+PopoverTrigger.displayName = PopoverPrimitive.Trigger.displayName;
 
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
-    open: boolean;
-    triggerRef: React.MutableRefObject<HTMLElement | null>;
-  }
->(({ className, align = "center", sideOffset = 4, open, triggerRef, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
+>(({ className, align = "center", sideOffset = 4, ...props }, ref) => {
+  const { open, triggerRef } = usePopoverContext();
   const contentRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (open) {
-      triggerRef.current = document.activeElement as HTMLElement;
-      // Focus the first focusable element inside the popover
-      const focusableElements = contentRef.current?.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements && focusableElements.length > 0) {
-        (focusableElements[0] as HTMLElement).focus();
-      }
+      requestAnimationFrame(() => {
+        const focusableElements = contentRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements && focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus();
+        }
+      });
     } else {
-      // Return focus to the trigger element when the popover closes
       if (triggerRef.current) {
         triggerRef.current.focus();
-        triggerRef.current = null;
       }
     }
   }, [open, triggerRef]);
