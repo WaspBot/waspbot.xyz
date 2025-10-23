@@ -6,9 +6,40 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { cn } from "@/lib/utils";
 
 function Popover({
+  children,
+  open: openProp,
+  onOpenChange,
   ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Root>) {
-  return <PopoverPrimitive.Root data-slot="popover" {...props} />;
+}: React.ComponentProps<typeof PopoverPrimitive.Root> & {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const [open, setOpen] = React.useState(openProp !== undefined ? openProp : false);
+
+  React.useEffect(() => {
+    if (openProp !== undefined) {
+      setOpen(openProp);
+    }
+  }, [openProp]);
+
+  const handleOpenChange = React.useCallback(
+    (newOpen: boolean) => {
+      setOpen(newOpen);
+      onOpenChange?.(newOpen);
+    },
+    [onOpenChange]
+  );
+
+  return (
+    <PopoverPrimitive.Root
+      data-slot="popover"
+      open={open}
+      onOpenChange={handleOpenChange}
+      {...props}
+    >
+      {children}
+    </PopoverPrimitive.Root>
+  );
 }
 
 function PopoverTrigger({
@@ -17,15 +48,67 @@ function PopoverTrigger({
   return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
 }
 
-function PopoverContent({
-  className,
-  align = "center",
-  sideOffset = 4,
-  ...props
-}: React.ComponentProps<typeof PopoverPrimitive.Content>) {
+const PopoverContent = React.forwardRef<
+  React.ElementRef<typeof PopoverPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
+    open: boolean;
+    triggerRef: React.MutableRefObject<HTMLElement | null>;
+  }
+>(({ className, align = "center", sideOffset = 4, open, triggerRef, ...props }, ref) => {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (open) {
+      triggerRef.current = document.activeElement as HTMLElement;
+      // Focus the first focusable element inside the popover
+      const focusableElements = contentRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements && focusableElements.length > 0) {
+        (focusableElements[0] as HTMLElement).focus();
+      }
+    } else {
+      // Return focus to the trigger element when the popover closes
+      if (triggerRef.current) {
+        triggerRef.current.focus();
+        triggerRef.current = null;
+      }
+    }
+  }, [open, triggerRef]);
+
+  const handleKeyDown = React.useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === "Tab" && contentRef.current) {
+        const focusableElements = contentRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0] as HTMLElement;
+        const lastElement = focusableElements[
+          focusableElements.length - 1
+        ] as HTMLElement;
+
+        if (event.shiftKey) {
+          // If Shift + Tab and focus is on the first element, move to the last
+          if (document.activeElement === firstElement) {
+            lastElement.focus();
+            event.preventDefault();
+          }
+        } else {
+          // If Tab and focus is on the last element, move to the first
+          if (document.activeElement === lastElement) {
+            firstElement.focus();
+            event.preventDefault();
+          }
+        }
+      }
+    },
+    []
+  );
+
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
+        ref={ref}
         data-slot="popover-content"
         align={align}
         sideOffset={sideOffset}
@@ -33,11 +116,12 @@ function PopoverContent({
           "bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-72 origin-(--radix-popover-content-transform-origin) rounded-md border p-4 shadow-md outline-hidden",
           className
         )}
+        onKeyDown={handleKeyDown}
         {...props}
       />
     </PopoverPrimitive.Portal>
   );
-}
+});
 
 function PopoverAnchor({
   ...props
