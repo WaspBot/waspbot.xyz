@@ -101,13 +101,25 @@ const PopoverContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(({ className, align = "center", sideOffset = 4, ...props }, ref) => {
   const { open, triggerRef } = usePopoverContext();
-  const contentRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = React.useRef<HTMLDivElement | null>(null);
+
+  const composedRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      contentRef.current = node;
+      if (typeof ref === 'function') {
+        ref(node);
+      } else if (ref) {
+        (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+    },
+    [ref]
+  );
 
   React.useEffect(() => {
     if (open) {
       requestAnimationFrame(() => {
         const focusableElements = contentRef.current?.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          'a[href], area[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
         );
         if (focusableElements && focusableElements.length > 0) {
           (focusableElements[0] as HTMLElement).focus();
@@ -124,12 +136,13 @@ const PopoverContent = React.forwardRef<
     (event: React.KeyboardEvent) => {
       if (event.key === "Tab" && contentRef.current) {
         const focusableElements = contentRef.current.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          'a[href], area[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
         );
-        const firstElement = focusableElements[0] as HTMLElement;
-        const lastElement = focusableElements[
-          focusableElements.length - 1
-        ] as HTMLElement;
+        if (focusableElements.length === 0) return; // no focusable children
+
+        const firstElement = focusableElements[0] as HTMLElement | undefined;
+        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement | undefined;
+        if (!firstElement || !lastElement) return;
 
         if (event.shiftKey) {
           // If Shift + Tab and focus is on the first element, move to the last
@@ -152,7 +165,7 @@ const PopoverContent = React.forwardRef<
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Content
-        ref={ref}
+        ref={composedRef}
         data-slot="popover-content"
         align={align}
         sideOffset={sideOffset}
