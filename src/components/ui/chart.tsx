@@ -86,7 +86,7 @@ function ChartContainer<TData extends Record<string, unknown>>({
 
     // Handle fragments by recursing into their children
     if (child.type === React.Fragment) {
-      const fragChildren = React.Children.map(child.props.children, (c) =>
+      const fragChildren = React.Children.map(child.props.children, c =>
         injectData(c)
       );
       return React.cloneElement(child as React.ReactElement<any>, {

@@ -5,11 +5,12 @@ import * as ProgressPrimitive from "@radix-ui/react-progress";
 
 import { cn } from "@/lib/utils";
 
-function Progress({
-  className,
-  value,
-  ...props
-}: React.ComponentProps<typeof ProgressPrimitive.Root>) {
+interface ProgressProps
+  extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> {
+  showLabel?: boolean;
+}
+
+function Progress({ className, value, showLabel, ...props }: ProgressProps) {
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
@@ -24,6 +25,14 @@ function Progress({
         className="bg-primary h-full w-full flex-1 transition-all"
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />
+      {showLabel && value !== undefined && value !== null && (
+        <span
+          className="absolute inset-0 flex items-center justify-center text-xs font-medium text-primary-foreground"
+          style={{ left: `${value}%`, transform: `translateX(-${value}%)` }}
+        >
+          {Math.round(value)}%
+        </span>
+      )}
     </ProgressPrimitive.Root>
   );
 }

@@ -106,7 +106,7 @@ const PopoverContent = React.forwardRef<
   const composedRef = React.useCallback(
     (node: HTMLDivElement | null) => {
       contentRef.current = node;
-      if (typeof ref === 'function') {
+      if (typeof ref === "function") {
         ref(node);
       } else if (ref) {
         (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
@@ -132,35 +132,34 @@ const PopoverContent = React.forwardRef<
     }
   }, [open, triggerRef]);
 
-  const handleKeyDown = React.useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === "Tab" && contentRef.current) {
-        const focusableElements = contentRef.current.querySelectorAll(
-          'a[href], area[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
-        );
-        if (focusableElements.length === 0) return; // no focusable children
+  const handleKeyDown = React.useCallback((event: React.KeyboardEvent) => {
+    if (event.key === "Tab" && contentRef.current) {
+      const focusableElements = contentRef.current.querySelectorAll(
+        'a[href], area[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements.length === 0) return; // no focusable children
 
-        const firstElement = focusableElements[0] as HTMLElement | undefined;
-        const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement | undefined;
-        if (!firstElement || !lastElement) return;
+      const firstElement = focusableElements[0] as HTMLElement | undefined;
+      const lastElement = focusableElements[focusableElements.length - 1] as
+        | HTMLElement
+        | undefined;
+      if (!firstElement || !lastElement) return;
 
-        if (event.shiftKey) {
-          // If Shift + Tab and focus is on the first element, move to the last
-          if (document.activeElement === firstElement) {
-            lastElement.focus();
-            event.preventDefault();
-          }
-        } else {
-          // If Tab and focus is on the last element, move to the first
-          if (document.activeElement === lastElement) {
-            firstElement.focus();
-            event.preventDefault();
-          }
+      if (event.shiftKey) {
+        // If Shift + Tab and focus is on the first element, move to the last
+        if (document.activeElement === firstElement) {
+          lastElement.focus();
+          event.preventDefault();
+        }
+      } else {
+        // If Tab and focus is on the last element, move to the first
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          event.preventDefault();
         }
       }
-    },
-    []
-  );
+    }
+  }, []);
 
   return (
     <PopoverPrimitive.Portal>
