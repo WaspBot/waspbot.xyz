@@ -26,10 +26,7 @@ function Progress({ className, value, showLabel, ...props }: ProgressProps) {
         style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
       />
       {showLabel && value !== undefined && value !== null && (
-        <span
-          className="absolute inset-0 flex items-center justify-center text-xs font-medium text-primary-foreground"
-          style={{ left: `${value}%`, transform: `translateX(-${value}%)` }}
-        >
+        <span className="text-primary-foreground absolute inset-0 flex items-center justify-center text-xs font-medium">
           {Math.round(value)}%
         </span>
       )}
