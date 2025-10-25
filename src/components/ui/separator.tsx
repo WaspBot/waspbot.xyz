@@ -11,6 +11,18 @@ function Separator({
   decorative = true,
   ...props
 }: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
+  if (orientation === "horizontal" && decorative) {
+    return (
+      <SeparatorPrimitive.Root
+        data-slot="separator"
+        decorative={decorative}
+        orientation={orientation}
+        className={cn("bg-border h-px w-full shrink-0", className)}
+        {...props}
+      />
+    );
+  }
+
   return (
     <SeparatorPrimitive.Root
       data-slot="separator"
