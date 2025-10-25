@@ -7,20 +7,17 @@ import { cn } from "@/lib/utils";
 
 function Separator({
   className,
-  orientation: propOrientation = "horizontal",
+  orientation = "horizontal",
   decorative = true,
-  vertical = false,
   ...props
-}: React.ComponentProps<typeof SeparatorPrimitive.Root> & { vertical?: boolean }) {
-  const orientation = vertical ? "vertical" : propOrientation;
-
+}: React.ComponentProps<typeof SeparatorPrimitive.Root>) {
   if (orientation === "horizontal" && decorative) {
     return (
-      <hr
-        className={cn(
-          "bg-border shrink-0 h-px w-full",
-          className
-        )}
+      <SeparatorPrimitive.Root
+        data-slot="separator"
+        decorative={decorative}
+        orientation={orientation}
+        className={cn("bg-border h-px w-full shrink-0", className)}
         {...props}
       />
     );
