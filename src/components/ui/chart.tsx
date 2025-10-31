@@ -418,3 +418,5 @@ export {
   ChartLegendContent,
   ChartStyle,
 };
+
+export default ChartContainer;
