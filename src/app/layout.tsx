@@ -42,6 +42,10 @@ export const metadata: Metadata = {
     creator: "@waspbot",
     images: ["https://waspbot.xyz/og.png"],
   },
+  // Expected static assets in public/ directory:
+  // - og.png (1200x630, PNG or JPEG)
+  // - favicon-16x16.png (16x16, PNG)
+  // - apple-touch-icon.png (180x180, PNG)
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon-16x16.png",
@@ -63,7 +67,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-background min-h-screen font-sans antialiased`}
       >
         {children}
-      </body>{" "}
+      </body>
     </html>
   );
 }
