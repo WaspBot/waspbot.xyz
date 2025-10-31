@@ -101,7 +101,7 @@
   /* A elements that don't have a class, are used for links in markdown */
   a:not([class]) {
     text-decoration-skip-ink: auto;
-    color: oklch(var(--primary));
+    color: var(--primary);
   }
 
   img,
