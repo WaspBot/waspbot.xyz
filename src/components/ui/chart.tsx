@@ -84,26 +84,26 @@ function ChartContainer<TData extends Record<string, unknown>>({
   const injectData = (child: React.ReactNode): React.ReactNode => {
     if (!React.isValidElement(child)) return child;
 
+    const elementChild = child as React.ReactElement<Record<string, unknown>>;
+
     // Handle fragments by recursing into their children
-    if (child.type === React.Fragment) {
-      const fragChildren = React.Children.map(child.props.children, c =>
-        injectData(c)
+    if (elementChild.type === React.Fragment) {
+      const fragChildren = React.Children.map(elementChild.props.children, c =>
+        injectData(c as React.ReactNode)
       );
-      return React.cloneElement(child as React.ReactElement<any>, {
-        ...child.props,
+      return React.cloneElement(elementChild, {
+        ...elementChild.props,
         children: fragChildren,
       });
     }
 
     // If child already has a data prop, leave it alone
-    const childProps: any = (child as any).props;
-    if (childProps && childProps.data !== undefined) return child;
+    const childProps = elementChild.props;
+    if (childProps && (childProps as { data?: unknown }).data !== undefined)
+      return child;
 
-    // Inject data prop (cast to any to avoid strict typings)
-    return React.cloneElement(
-      child as React.ReactElement<any>,
-      { ...(childProps || {}), data } as any
-    );
+    // Inject data prop
+    return React.cloneElement(elementChild, { ...(childProps || {}), data });
   };
 
   const enhancedChildren = React.Children.map(children, injectData);
@@ -374,7 +374,9 @@ function ChartLegendContent({
 // Helper to extract item config from a payload.
 function getPayloadConfigFromPayload(
   config: ChartConfig,
-  payload: unknown,
+  payload:
+    | { payload?: Record<string, unknown>; [key: string]: unknown }
+    | unknown,
   key: string
 ) {
   if (typeof payload !== "object" || payload === null) {
@@ -385,24 +387,22 @@ function getPayloadConfigFromPayload(
     "payload" in payload &&
     typeof payload.payload === "object" &&
     payload.payload !== null
-      ? payload.payload
+      ? (payload.payload as Record<string, unknown>)
       : undefined;
 
   let configLabelKey: string = key;
 
   if (
     key in payload &&
-    typeof payload[key as keyof typeof payload] === "string"
+    typeof (payload as Record<string, unknown>)[key] === "string"
   ) {
-    configLabelKey = payload[key as keyof typeof payload] as string;
+    configLabelKey = (payload as Record<string, unknown>)[key] as string;
   } else if (
     payloadPayload &&
     key in payloadPayload &&
-    typeof payloadPayload[key as keyof typeof payloadPayload] === "string"
+    typeof payloadPayload[key] === "string"
   ) {
-    configLabelKey = payloadPayload[
-      key as keyof typeof payloadPayload
-    ] as string;
+    configLabelKey = payloadPayload[key] as string;
   }
 
   return configLabelKey in config
