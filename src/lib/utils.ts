@@ -33,5 +33,9 @@ export function clamp(n: number, min: number, max: number): number {
  */
 export function formatDateISO(input: Date | string | number): string {
   const date = new Date(input);
-  return date.toISOString().split('T')[0];
+  if (isNaN(date.getTime())) {
+    // Throw a TypeError for invalid date inputs to make the error semantics explicit
+    throw new TypeError(`Invalid date input: ${input}`);
+  }
+  return date.toISOString().split("T")[0];
 }
