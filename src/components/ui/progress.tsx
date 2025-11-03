@@ -18,12 +18,22 @@ function Progress({ className, value, showLabel, ...props }: ProgressProps) {
         "bg-primary/20 relative h-2 w-full overflow-hidden rounded-full",
         className
       )}
+      aria-label={value === null || value === undefined ? "Loading..." : `Progress: ${Math.round(value)}%`}
       {...props}
     >
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
-        className="bg-primary h-full w-full flex-1 transition-all"
-        style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+        className={cn(
+          "bg-primary h-full w-full flex-1",
+          value === null || value === undefined
+            ? "animate-pulse motion-reduce:animate-none"
+            : "transition-all"
+        )}
+        style={
+          value === null || value === undefined
+            ? undefined
+            : { transform: `translateX(-${100 - (value || 0)}%)` }
+        }
       />
       {showLabel && value !== undefined && value !== null && (
         <span className="text-primary-foreground absolute inset-0 flex items-center justify-center text-xs font-medium">
