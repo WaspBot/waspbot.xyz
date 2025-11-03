@@ -40,6 +40,8 @@ function ChartContainer<TData extends Record<string, unknown>>({
   children,
   config,
   data,
+  height = 300,
+  title,
   ...props
 }: React.ComponentProps<"div"> & {
   config: ChartConfig;
@@ -47,6 +49,8 @@ function ChartContainer<TData extends Record<string, unknown>>({
     typeof RechartsPrimitive.ResponsiveContainer
   >["children"];
   data?: TData[];
+  height?: number;
+  title?: string;
 }) {
   const uniqueId = React.useId();
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
@@ -60,6 +64,8 @@ function ChartContainer<TData extends Record<string, unknown>>({
           "text-muted-foreground flex aspect-video items-center justify-center",
           className
         )}
+        style={{ height }}
+        aria-label={title ? `${title}, no data available` : "No data available"}
         {...props}
       >
         <svg
@@ -114,9 +120,11 @@ function ChartContainer<TData extends Record<string, unknown>>({
         data-slot="chart"
         data-chart={chartId}
         className={cn(
-          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
+          "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='"#ccc"']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='"#ccc"']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='"#ccc"']]:stroke-border flex justify-center text-xs [&_.recharts-dot[stroke='"#fff"']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='"#fff"']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
           className
         )}
+        style={{ height }}
+        aria-label={title}
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
