@@ -4,11 +4,68 @@ import { ChevronRight, MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
-  return <nav aria-label="Breadcrumb" data-slot="breadcrumb" {...props} />;
+interface BreadcrumbProps extends React.ComponentProps<"nav"> {
+  items?: { name: string; href: string }[];
 }
 
-function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
+function Breadcrumb({ items, ...props }: BreadcrumbProps) {
+  const jsonLd = items && items.length > 0 ? {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": items.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name,
+      "item": item.href,
+    })),
+  } : null;
+
+  const jsonLdString = jsonLd
+    ? JSON.stringify(jsonLd).replace(/</g, "\u003c").replace(/>/g, "\u003e")
+    : null;
+
+  return (
+    <nav aria-label="Breadcrumb" data-slot="breadcrumb" {...props}>
+      {jsonLdString && (
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: The JSON-LD string is
+        // intentionally escaped to prevent XSS vulnerabilities from </script> sequences.
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString }}
+        />
+      )}
+      {props.children}
+    </nav>
+  );
+}
+
+function BreadcrumbList({ className, children, ...props }: React.ComponentProps<"ol">) {
+  const items = React.Children.toArray(children);
+  const lastIndex = items.length - 1;
+
+  const modifiedChildren = items.map((child, index) => {
+    if (React.isValidElement(child) && child.type === BreadcrumbItem) {
+      const isLast = index === lastIndex;
+      // Assert child as React.ReactElement with BreadcrumbItemProps to access props safely
+      const itemChildren = React.Children.toArray((child as React.ReactElement<any>).props.children);
+      const modifiedItemChildren = itemChildren.map((itemChild) => {
+        if (React.isValidElement(itemChild)) {
+          if (itemChild.type === BreadcrumbLink) {
+            return React.cloneElement(itemChild, {
+              "aria-current": isLast ? "page" : undefined,
+            } as React.ComponentProps<typeof BreadcrumbLink>); // Assert type for props
+          } else if (itemChild.type === BreadcrumbPage) {
+            // BreadcrumbPage already has aria-current="page", so no need to modify
+            return itemChild;
+          }
+        }
+        return itemChild;
+      });
+      return React.cloneElement(child, {}, modifiedItemChildren);
+    }
+    return child;
+  });
+
   return (
     <ol
       data-slot="breadcrumb-list"
@@ -17,7 +74,9 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
         className
       )}
       {...props}
-    />
+    >
+      {modifiedChildren}
+    </ol>
   );
 }
 
@@ -34,6 +93,7 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
 function BreadcrumbLink({
   asChild,
   className,
+  "aria-current": ariaCurrent,
   ...props
 }: React.ComponentProps<"a"> & {
   asChild?: boolean;
@@ -44,6 +104,7 @@ function BreadcrumbLink({
     <Comp
       data-slot="breadcrumb-link"
       className={cn("hover:text-foreground transition-colors", className)}
+      aria-current={ariaCurrent}
       {...props}
     />
   );
