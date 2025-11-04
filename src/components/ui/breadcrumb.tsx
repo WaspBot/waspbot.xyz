@@ -20,12 +20,18 @@ function Breadcrumb({ items, ...props }: BreadcrumbProps) {
     })),
   } : null;
 
+  const jsonLdString = jsonLd
+    ? JSON.stringify(jsonLd).replace(/</g, "\u003c").replace(/>/g, "\u003e")
+    : null;
+
   return (
     <nav aria-label="Breadcrumb" data-slot="breadcrumb" {...props}>
-      {jsonLd && (
+      {jsonLdString && (
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: The JSON-LD string is
+        // intentionally escaped to prevent XSS vulnerabilities from </script> sequences.
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdString }}
         />
       )}
       {props.children}
@@ -40,13 +46,14 @@ function BreadcrumbList({ className, children, ...props }: React.ComponentProps<
   const modifiedChildren = items.map((child, index) => {
     if (React.isValidElement(child) && child.type === BreadcrumbItem) {
       const isLast = index === lastIndex;
-      const itemChildren = React.Children.toArray(child.props.children);
+      // Assert child as React.ReactElement with BreadcrumbItemProps to access props safely
+      const itemChildren = React.Children.toArray((child as React.ReactElement<any>).props.children);
       const modifiedItemChildren = itemChildren.map((itemChild) => {
         if (React.isValidElement(itemChild)) {
           if (itemChild.type === BreadcrumbLink) {
             return React.cloneElement(itemChild, {
               "aria-current": isLast ? "page" : undefined,
-            });
+            } as React.ComponentProps<typeof BreadcrumbLink>); // Assert type for props
           } else if (itemChild.type === BreadcrumbPage) {
             // BreadcrumbPage already has aria-current="page", so no need to modify
             return itemChild;
