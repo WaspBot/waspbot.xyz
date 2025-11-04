@@ -1,10 +1,5 @@
 import Image from "next/image";
-import dynamic from "next/dynamic";
-
-const Chart = dynamic(() => import("@/components/ui/chart"), {
-  ssr: false,
-  loading: () => <p>Loading chart...</p>,
-});
+import { ClientChart } from "@/components/client-chart";
 
 export default function Home() {
   return (
@@ -40,7 +35,7 @@ export default function Home() {
           </ol>
 
           <div className="flex flex-col items-center gap-4 sm:flex-row">
-            <Chart />
+            <ClientChart />
             <a
               className="bg-foreground text-background flex h-10 items-center justify-center gap-2 rounded-full border border-solid border-transparent px-4 text-sm font-medium transition-colors hover:bg-[#383838] sm:h-12 sm:w-auto sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
               href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
