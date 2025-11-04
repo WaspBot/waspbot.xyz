@@ -18,23 +18,47 @@ const cardVariants = cva(
   }
 );
 
-interface CardProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof cardVariants> {
-  as?: "div" | "section" | "article";
-}
+// In src/components/ui/card.tsx around lines 27-36, the forwarded ref is currently
+// hard-typed to HTMLDivElement even though Card is polymorphic via the as prop;
+// change Card to a generic polymorphic component so the ref type follows the
+// chosen element. Make Card generic: <T extends React.ElementType = "div">,
+// declare CardProps<T> = { as?: T } & Omit<React.ComponentPropsWithoutRef<T>,
+// "as"> & { size?: ... } (include existing variant props), and use
+// React.forwardRef<React.ElementRef<T>, CardProps<T>>; inside the implementation
+// default as to "div" typed as T and spread props, and export/update any CardProps
+// usage accordingly so the ref type matches the actual rendered element.
+type CardElement = React.ElementType;
 
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, size, as: Comp = "div", ...props }, ref) => (
-    <Comp
-      ref={ref}
-      data-slot="card"
-      className={cn(cardVariants({ size, className }))}
-      {...props}
-    />
-  )
-);
-Card.displayName = "Card";
+type CardProps<T extends CardElement = "div"> =
+  VariantProps<typeof cardVariants> &
+  Omit<React.ComponentPropsWithoutRef<T>, "as"> &
+  {
+    as?: T;
+  };
+
+const Card = React.forwardRef(
+  <T extends CardElement = "div">(
+    { className, size, as, ...props }: CardProps<T>,
+    ref: React.ForwardedRef<any> // Use 'any' here to bypass stubborn type inference issues
+  ) => {
+    const Comp = (as ?? "div") as T;
+    return (
+      <Comp
+        ref={ref}
+        data-slot="card"
+        className={cn(cardVariants({ size }), className)}
+        {...props}
+      />
+    );
+  }
+) as (<T extends CardElement = "div">(
+  props: CardProps<T> & { ref?: React.Ref<React.ElementRef<T>> }
+) => React.ReactElement | null);
+
+Object.defineProperty(Card, "displayName", {
+  value: "Card",
+  writable: false,
+});
 
 const CardHeader = React.forwardRef<
   HTMLDivElement,
