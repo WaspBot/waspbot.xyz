@@ -18,41 +18,38 @@ const cardVariants = cva(
   }
 );
 
-// In src/components/ui/card.tsx around lines 27-36, the forwarded ref is currently
-// hard-typed to HTMLDivElement even though Card is polymorphic via the as prop;
-// change Card to a generic polymorphic component so the ref type follows the
-// chosen element. Make Card generic: <T extends React.ElementType = "div">,
-// declare CardProps<T> = { as?: T } & Omit<React.ComponentPropsWithoutRef<T>,
-// "as"> & { size?: ... } (include existing variant props), and use
-// React.forwardRef<React.ElementRef<T>, CardProps<T>>; inside the implementation
-// default as to "div" typed as T and spread props, and export/update any CardProps
-// usage accordingly so the ref type matches the actual rendered element.
-type CardElement = React.ElementType;
+type CardElement = "div" | "section" | "article";
 
-type CardProps<T extends CardElement = "div"> =
-  VariantProps<typeof cardVariants> &
-  Omit<React.ComponentPropsWithoutRef<T>, "as"> &
-  {
-    as?: T;
-  };
+// Helper type to map CardElement to its corresponding HTMLElement
+type CardHTMLElement<T extends CardElement> = T extends "div"
+  ? HTMLDivElement
+  : T extends "section"
+  ? HTMLElement // section is a generic HTMLElement
+  : T extends "article"
+  ? HTMLElement // article is a generic HTMLElement
+  : never;
 
-const Card = React.forwardRef(
-  <T extends CardElement = "div">(
-    { className, size, as, ...props }: CardProps<T>,
-    ref: React.ForwardedRef<any> // Use 'any' here to bypass stubborn type inference issues
-  ) => {
-    const Comp = (as ?? "div") as T;
-    return (
-      <Comp
-        ref={ref}
-        data-slot="card"
-        className={cn(cardVariants({ size }), className)}
-        {...props}
-      />
-    );
-  }
-) as (<T extends CardElement = "div">(
-  props: CardProps<T> & { ref?: React.Ref<React.ElementRef<T>> }
+type CardOwnProps = VariantProps<typeof cardVariants>;
+
+type CardComponentProps<T extends CardElement> = CardOwnProps & Omit<React.ComponentPropsWithRef<T>, keyof CardOwnProps | "as" | "ref"> & {
+  as?: T;
+};
+
+const Card = React.forwardRef(function Card<T extends CardElement = "div">(
+  { as, className, size, ...props }: CardComponentProps<T>,
+  ref: React.Ref<CardHTMLElement<T>>
+) {
+  const Comp = (as ?? "div") as T;
+  return (
+    <Comp
+      ref={ref as React.Ref<CardHTMLElement<T>>}
+      data-slot="card"
+      className={cn(cardVariants({ size }), className)}
+      {...props}
+    />
+  );
+}) as (<T extends CardElement = "div">(
+  props: CardComponentProps<T> & { ref?: React.Ref<CardHTMLElement<T>> }
 ) => React.ReactElement | null);
 
 Object.defineProperty(Card, "displayName", {
