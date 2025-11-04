@@ -34,7 +34,7 @@ export function ClientChart() {
       <LineChart accessibilityLayer data={chartData}>
         <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
         <YAxis tickLine={false} axisLine={false} tickMargin={8} />
-        <Tooltip cursor={false} content={<></>} />
+
         <Line dataKey="desktop" type="monotone" stroke="var(--color-desktop)" strokeWidth={2} dot={false} />
       </LineChart>
     </ChartContainer>

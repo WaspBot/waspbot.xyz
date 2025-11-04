@@ -31,26 +31,33 @@ type CardHTMLElement<T extends CardElement> = T extends "div"
 
 type CardOwnProps = VariantProps<typeof cardVariants>;
 
-type CardComponentProps<T extends CardElement> = CardOwnProps & Omit<React.ComponentPropsWithRef<T>, keyof CardOwnProps | "as" | "ref"> & {
-  as?: T;
-};
+type CardProps<T extends CardElement = "div"> =
+  VariantProps<typeof cardVariants> &
+  { as?: T } &
+  Omit<React.ComponentProps<T>, "as" | "size" | "ref">;
 
 const Card = React.forwardRef(function Card<T extends CardElement = "div">(
-  { as, className, size, ...props }: CardComponentProps<T>,
-  ref: React.Ref<CardHTMLElement<T>>
+  { className, size, as, ...props }: CardProps<T>,
+  ref: React.ForwardedRef<
+    T extends "div" ? HTMLDivElement
+    : T extends "section" ? HTMLElement
+    : T extends "article" ? HTMLElement
+    : HTMLDivElement
+  >
 ) {
   const Comp = (as ?? "div") as T;
+
   return (
     <Comp
-      ref={ref as React.Ref<CardHTMLElement<T>>}
+      ref={ref}
       data-slot="card"
       className={cn(cardVariants({ size }), className)}
       {...props}
     />
   );
-}) as (<T extends CardElement = "div">(
-  props: CardComponentProps<T> & { ref?: React.Ref<CardHTMLElement<T>> }
-) => React.ReactElement | null);
+}) as <T extends CardElement = "div">(
+  props: CardProps<T> & { ref?: React.Ref<React.ElementRef<T>> }
+) => React.ReactElement;
 
 Object.defineProperty(Card, "displayName", {
   value: "Card",
