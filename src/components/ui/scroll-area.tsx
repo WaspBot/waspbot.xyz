@@ -19,7 +19,8 @@ function ScrollArea({
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
       className={cn("relative", className)}
-      scrollHideDelay={autoHide ? 500 : 0}
+      type={autoHide ? "hover" : "always"}
+      scrollHideDelay={autoHide ? 500 : undefined}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
@@ -29,6 +30,7 @@ function ScrollArea({
         {children}
       </ScrollAreaPrimitive.Viewport>
       <ScrollBar scrollbarSize={scrollbarSize} />
+      <ScrollBar orientation="horizontal" scrollbarSize={scrollbarSize} />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   );
