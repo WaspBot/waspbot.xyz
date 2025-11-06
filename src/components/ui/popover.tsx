@@ -9,6 +9,7 @@ interface PopoverContextValue {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   triggerRef: React.MutableRefObject<HTMLElement | null>;
+  contentId: string;
 }
 
 const PopoverContext = React.createContext<PopoverContextValue | null>(null);
@@ -50,10 +51,11 @@ function Popover({
   );
 
   const triggerRef = React.useRef<HTMLElement | null>(null);
+  const contentId = React.useId();
 
   const contextValue = React.useMemo(
-    () => ({ open, onOpenChange: handleOpenChange, triggerRef }),
-    [open, handleOpenChange, triggerRef]
+    () => ({ open, onOpenChange: handleOpenChange, triggerRef, contentId }),
+    [open, handleOpenChange, triggerRef, contentId]
   );
 
   return (
@@ -74,7 +76,7 @@ const PopoverTrigger = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Trigger>
 >(({ onPointerDown, ...props }, forwardedRef) => {
-  const { triggerRef } = usePopoverContext();
+  const { triggerRef, open, contentId } = usePopoverContext();
 
   const handlePointerDown = React.useCallback(
     (event: React.PointerEvent<HTMLButtonElement>) => {
@@ -89,6 +91,9 @@ const PopoverTrigger = React.forwardRef<
       ref={forwardedRef}
       data-slot="popover-trigger"
       onPointerDown={handlePointerDown}
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      aria-controls={contentId}
       {...props}
     />
   );
@@ -98,9 +103,12 @@ PopoverTrigger.displayName = PopoverPrimitive.Trigger.displayName;
 
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "center", sideOffset = 4, ...props }, ref) => {
-  const { open, triggerRef } = usePopoverContext();
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
+    ariaLabel?: string;
+    ariaLabelledBy?: string;
+  }
+>(({ className, align = "center", sideOffset = 4, ariaLabel, ariaLabelledBy, ...props }, ref) => {
+  const { open, triggerRef, contentId } = usePopoverContext();
   const contentRef = React.useRef<HTMLDivElement | null>(null);
 
   const composedRef = React.useCallback(
@@ -173,6 +181,9 @@ const PopoverContent = React.forwardRef<
           className
         )}
         onKeyDown={handleKeyDown}
+        role="dialog"
+        id={contentId}
+        {...(ariaLabelledBy ? { "aria-labelledby": ariaLabelledBy } : ariaLabel ? { "aria-label": ariaLabel } : {})}
         {...props}
       />
     </PopoverPrimitive.Portal>
