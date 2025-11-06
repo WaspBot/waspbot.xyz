@@ -8,12 +8,19 @@ import { cn } from "@/lib/utils";
 function ScrollArea({
   className,
   children,
+  autoHide = true,
+  scrollbarSize = 10,
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
+  autoHide?: boolean;
+  scrollbarSize?: number;
+}) {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
       className={cn("relative", className)}
+      type={autoHide ? "hover" : "always"}
+      scrollHideDelay={autoHide ? 500 : undefined}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
@@ -22,7 +29,8 @@ function ScrollArea({
       >
         {children}
       </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
+      <ScrollBar scrollbarSize={scrollbarSize} />
+      <ScrollBar orientation="horizontal" scrollbarSize={scrollbarSize} />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   );
@@ -31,20 +39,26 @@ function ScrollArea({
 function ScrollBar({
   className,
   orientation = "vertical",
+  scrollbarSize = 12,
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>) {
+}: React.ComponentProps<typeof ScrollAreaPrimitive.ScrollAreaScrollbar> & {
+  scrollbarSize?: number;
+}) {
   return (
     <ScrollAreaPrimitive.ScrollAreaScrollbar
       data-slot="scroll-area-scrollbar"
       orientation={orientation}
       className={cn(
-        "flex touch-none p-px transition-colors select-none",
+        "flex touch-none p-px transition-colors select-none data-[state=hidden]:opacity-0 data-[state=visible]:opacity-100 transition-opacity duration-300",
         orientation === "vertical" &&
-          "h-full w-2.5 border-l border-l-transparent",
+          "h-full border-l border-l-transparent",
         orientation === "horizontal" &&
-          "h-2.5 flex-col border-t border-t-transparent",
+          "flex-col border-t border-t-transparent",
         className
       )}
+      style={{
+        [orientation === "vertical" ? "width" : "height"]: scrollbarSize,
+      }}
       {...props}
     >
       <ScrollAreaPrimitive.ScrollAreaThumb
