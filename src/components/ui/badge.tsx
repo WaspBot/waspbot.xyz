@@ -55,7 +55,7 @@ function Badge({ className, variant, asChild = false, icon, ...props }: BadgePro
 
   if (process.env.NODE_ENV === "development" && asChild && icon) {
     console.warn(
-      "Warning: Using both `asChild` and `icon` in Badge might lead to unexpected behavior. Consider wrapping the icon and children in a single element when `asChild` is true."
+      "Warning: The `icon` prop is ignored when `asChild` is true. If you need an icon, include it directly in your child element instead."
     );
   }
 
