@@ -103,8 +103,11 @@ PopoverTrigger.displayName = PopoverPrimitive.Trigger.displayName;
 
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "center", sideOffset = 4, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content> & {
+    ariaLabel?: string;
+    ariaLabelledBy?: string;
+  }
+>(({ className, align = "center", sideOffset = 4, ariaLabel, ariaLabelledBy, ...props }, ref) => {
   const { open, triggerRef, contentId } = usePopoverContext();
   const contentRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -180,7 +183,7 @@ const PopoverContent = React.forwardRef<
         onKeyDown={handleKeyDown}
         role="dialog"
         id={contentId}
-        aria-label="Popover"
+        {...(ariaLabelledBy ? { "aria-labelledby": ariaLabelledBy } : ariaLabel ? { "aria-label": ariaLabel } : {})}
         {...props}
       />
     </PopoverPrimitive.Portal>
