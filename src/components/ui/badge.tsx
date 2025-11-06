@@ -53,14 +53,29 @@ export interface BadgeProps
 function Badge({ className, variant, asChild = false, icon, ...props }: BadgeProps) {
   const Comp = asChild ? Slot : "span";
 
+  if (process.env.NODE_ENV === "development" && asChild && icon) {
+    console.warn(
+      "Warning: Using both `asChild` and `icon` in Badge might lead to unexpected behavior. Consider wrapping the icon and children in a single element when `asChild` is true."
+    );
+  }
+
   return (
     <Comp
       data-slot="badge"
       className={cn(badgeVariants({ variant }), className)}
       {...props}
     >
-      {icon}
-      {props.children}
+      {asChild ? (
+        <span>
+          {icon}
+          {props.children}
+        </span>
+      ) : (
+        <>
+          {icon}
+          {props.children}
+        </>
+      )}
     </Comp>
   );
 }
