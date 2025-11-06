@@ -66,10 +66,7 @@ function Badge({ className, variant, asChild = false, icon, ...props }: BadgePro
       {...props}
     >
       {asChild ? (
-        <span>
-          {icon}
-          {props.children}
-        </span>
+        props.children
       ) : (
         <>
           {icon}
