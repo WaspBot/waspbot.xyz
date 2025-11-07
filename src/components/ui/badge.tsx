@@ -14,7 +14,13 @@ const badgeVariants = cva(
         secondary:
           "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive:
-          "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90",
+        success:
+          "border-transparent bg-success text-success-foreground [a&]:hover:bg-success/90",
+        warning:
+          "border-transparent bg-warning text-warning-foreground [a&]:hover:bg-warning/90",
+        info:
+          "border-transparent bg-info text-info-foreground [a&]:hover:bg-info/90",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
       },
@@ -33,6 +39,10 @@ export interface BadgeProps
    * @default false
    */
   asChild?: boolean;
+  /**
+   * An optional icon to display on the left side of the badge.
+   */
+  icon?: React.ReactNode;
 }
 
 /**
@@ -40,15 +50,30 @@ export interface BadgeProps
  * @param {BadgeProps} props - The props for the badge component.
  * @returns {JSX.Element} The rendered badge component.
  */
-function Badge({ className, variant, asChild = false, ...props }: BadgeProps) {
+function Badge({ className, variant, asChild = false, icon, ...props }: BadgeProps) {
   const Comp = asChild ? Slot : "span";
+
+  if (process.env.NODE_ENV === "development" && asChild && icon) {
+    console.warn(
+      "Warning: The `icon` prop is ignored when `asChild` is true. If you need an icon, include it directly in your child element instead."
+    );
+  }
 
   return (
     <Comp
       data-slot="badge"
       className={cn(badgeVariants({ variant }), className)}
       {...props}
-    />
+    >
+      {asChild ? (
+        props.children
+      ) : (
+        <>
+          {icon}
+          {props.children}
+        </>
+      )}
+    </Comp>
   );
 }
 
