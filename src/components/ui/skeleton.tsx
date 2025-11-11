@@ -14,7 +14,7 @@ function Skeleton<T extends React.ElementType = 'div'>({ className, as, ...props
   return (
     <Component
       aria-hidden="true"
-      className={cn("animate-pulse rounded-md bg-primary/10", className)}
+      className={cn("rounded-md bg-primary/10 motion-safe:animate-pulse motion-reduce:animate-none", className)}
       {...props}
     />
   );
