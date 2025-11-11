@@ -1,13 +1,19 @@
 import { cn } from "@/lib/utils";
 import React from "react";
 
-interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-  as?: React.ElementType;
+interface SkeletonProps<T extends React.ElementType = 'div'> {
+  as?: T;
+  className?: string;
 }
 
-function Skeleton({ className, as: Component = "div", ...props }: SkeletonProps) {
+type PolymorphicSkeletonProps<T extends React.ElementType = 'div'> =
+  SkeletonProps<T> & Omit<React.ComponentPropsWithoutRef<T>, keyof SkeletonProps<T>>;
+
+function Skeleton<T extends React.ElementType = 'div'>({ className, as, ...props }: PolymorphicSkeletonProps<T>) {
+  const Component = as || 'div';
   return (
     <Component
+      aria-hidden="true"
       className={cn("animate-pulse rounded-md bg-primary/10", className)}
       {...props}
     />
