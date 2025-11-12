@@ -11,8 +11,10 @@ export default function ErrorBoundary({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
-    console.error(error);
+    // Log the error to the console
+    console.error(error, error.digest ? { digest: error.digest } : {});
+    // Consider integrating an error reporting provider here (e.g., Sentry, Bugsnag)
+    // reportError(error); // Placeholder for future integration
   }, [error]);
 
   return (
