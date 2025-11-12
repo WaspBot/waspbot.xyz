@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 
-export default function Error({
+export default function ErrorBoundary({
   error,
   reset,
 }: {
@@ -16,7 +16,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground p-4">
       <h1 className="text-4xl font-bold mb-4">Something went wrong!</h1>
       <p className="text-lg text-muted-foreground mb-8 text-center">
         We apologize for the inconvenience. Please try again or return to the homepage.
@@ -32,6 +32,6 @@ export default function Error({
           Go Home
         </Link>
       </div>
-    </div>
+    </main>
   );
 }
