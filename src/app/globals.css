@@ -177,3 +177,31 @@
     );
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  body {
+    background-color: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Remove backgrounds from all elements */
+  * {
+    background-color: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Hide elements that are not essential for print */
+  .no-print {
+    display: none !important;
+  }
+}
