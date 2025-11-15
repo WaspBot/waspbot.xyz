@@ -16,16 +16,17 @@ export function ThemeToggle() {
   });
 
   React.useEffect(() => {
-    const storedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-    if (storedTheme) {
-      setTheme(storedTheme);
-      document.documentElement.setAttribute("data-theme", storedTheme);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
-      document.documentElement.setAttribute("data-theme", "dark");
-    } else {
-      document.documentElement.setAttribute("data-theme", "light");
-    }
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const handleChange = () => {
+      setTheme(mediaQuery.matches ? "dark" : "light");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
   }, []);
 
   const toggleTheme = () => {
