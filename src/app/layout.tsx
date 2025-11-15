@@ -65,12 +65,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <script>
-          (function () {
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function () {
             const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', theme);
-          })();
-        </script>
+          })();`,
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-background min-h-screen font-sans antialiased text-foreground`}
