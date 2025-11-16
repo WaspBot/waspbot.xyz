@@ -1,6 +1,11 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
+export const metadata = {
+  title: 'About Waspbot',
+  description: 'Learn more about Waspbot\'s mission, values, and team.',
+};
+
 export default function AboutPage() {
   return (
     <main className="container mx-auto px-4 py-8">
