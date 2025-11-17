@@ -1,7 +1,19 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-  const { email } = await request.json();
+  let email: string;
+  try {
+    const body = await request.json();
+    email = body.email;
+  } catch (error) {
+    return new NextResponse(JSON.stringify({ message: 'Invalid request body' }), {
+      status: 400,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store',
+      },
+    });
+  }
 
   if (!email || !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
     return new NextResponse(JSON.stringify({ message: 'Invalid email address' }), {
