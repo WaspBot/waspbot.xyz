@@ -63,7 +63,7 @@ async function saveEmailToDatabase(email: string) {
   // In a real application, you would interact with your database here
   // For example:
   // await db.collection('newsletter_subscriptions').insertOne({ email, subscribedAt: new Date() });
-  console.log(`Saving email to database: ${email}`);
+  console.log('Saving email to database');
   // Simulate a delay for database operation
   await new Promise(resolve => setTimeout(resolve, 100));
 }
