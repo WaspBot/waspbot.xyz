@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -27,12 +26,16 @@ interface AvatarProps
   alt?: string;
   fallback?: React.ReactNode;
   status?: "online" | "offline" | "away" | "busy";
-  asChild?: boolean;
 }
 
 const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
-  ({ className, size, src, alt, fallback, status, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "span";
+  ({ className, size, src, alt, fallback, status, ...props }, ref) => {
+    const Comp = "span";
+    const [imageError, setImageError] = React.useState(false);
+
+    React.useEffect(() => {
+      setImageError(false);
+    }, [src]);
 
     return (
       <Comp
@@ -40,8 +43,13 @@ const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
         className={cn(avatarVariants({ size }), className)}
         {...props}
       >
-        {src ? (
-          <img src={src} alt={alt} className="aspect-square h-full w-full" />
+        {src && !imageError ? (
+          <img
+            src={src}
+            alt={alt}
+            className="aspect-square h-full w-full"
+            onError={() => setImageError(true)}
+          />
         ) : (
           <span className="flex h-full w-full items-center justify-center rounded-full bg-muted">
             {fallback}
@@ -49,6 +57,7 @@ const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
         )}
         {status && (
           <span
+            aria-hidden="true"
             className={cn(
               "absolute bottom-0 right-0 block size-2.5 rounded-full ring-2 ring-background",
               {
