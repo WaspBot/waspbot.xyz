@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import DOMPurify from 'dompurify';
 
 import { featuredPosts } from '@/lib/blog';
 
@@ -18,12 +19,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     notFound();
   }
 
+  const sanitizedContent = DOMPurify.sanitize(post.content);
+
   return (
     <div className="container mx-auto py-8">
       <article className="max-w-3xl mx-auto">
         <h1 className="text-5xl font-bold mb-4">{post.title}</h1>
         <p className="text-lg text-muted-foreground mb-8">{post.date}</p>
-        <div className="prose lg:prose-xl dark:prose-invert" dangerouslySetInnerHTML={{ __html: post.content }} />
+        <div className="prose lg:prose-xl dark:prose-invert" dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
         <div className="mt-12">
           <Link href="/blog" className="text-primary hover:underline">
             &larr; Back to all posts
