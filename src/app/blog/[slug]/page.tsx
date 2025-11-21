@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 
 import { featuredPosts } from '@/lib/blog';
 
@@ -10,8 +10,8 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   const post = featuredPosts.find((p) => p.slug === slug);
 
