@@ -3,13 +3,33 @@ import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 
 interface PaginationProps extends React.HTMLAttributes<HTMLElement> {
+  /**
+   * The current active page. Must be within the range [1, totalPages].
+   */
   currentPage: number;
+  /**
+   * The total number of pages. Must be a positive integer (>= 1).
+   */
   totalPages: number;
   onPageChange: (page: number) => void;
 }
 
 const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
   ({ currentPage, totalPages, onPageChange, className, ...props }, ref) => {
+    // Runtime Prop Validation
+    if (totalPages < 1) {
+      console.warn("Pagination: totalPages must be a positive integer (>= 1).");
+      return null; // Or a minimal fallback UI
+    }
+
+    if (currentPage < 1 || currentPage > totalPages) {
+      console.warn(
+        `Pagination: currentPage (${currentPage}) is out of valid range [1, ${totalPages}].`
+      );
+      // Optionally, you might want to adjust currentPage or return null/fallback here
+      // For now, we'll let the component render with the invalid currentPage, but warn.
+    }
+
     const handlePageChange = (page: number) => {
       if (page >= 1 && page <= totalPages) {
         onPageChange(page);
@@ -18,9 +38,16 @@ const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
 
     const renderPageButtons = () => {
       const pageButtons = [];
-      const maxPageButtons = 5; // Number of page buttons to display
-      const startPage = Math.max(1, currentPage - Math.floor(maxPageButtons / 2));
-      const endPage = Math.min(totalPages, startPage + maxPageButtons - 1);
+      let maxPageButtons = 5; // Number of page buttons to display
+
+      // Cap maxPageButtons to totalPages to prevent displaying more buttons than pages
+      maxPageButtons = Math.min(maxPageButtons, totalPages);
+
+      let startPage = currentPage - Math.floor(maxPageButtons / 2);
+      startPage = Math.max(1, startPage);
+      startPage = Math.min(startPage, totalPages - maxPageButtons + 1);
+
+      const endPage = startPage + maxPageButtons - 1;
 
       if (startPage > 1) {
         pageButtons.push(
