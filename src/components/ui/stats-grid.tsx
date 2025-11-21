@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from './card';
-import { Badge } from './badge';
 import { cn } from '@/lib/utils';
 
 interface StatItem {
+  id: string;
   label: string;
   value: string | number;
   icon?: React.ElementType; // Assuming icon can be a React component
@@ -19,8 +19,8 @@ interface StatsGridProps {
 export function StatsGrid({ items }: StatsGridProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {items.map((item, index) => (
-        <Card key={index}>
+      {items.map((item) => (
+        <Card key={item.id}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               {item.label}
