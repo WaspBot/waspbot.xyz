@@ -30,11 +30,12 @@ export interface InputProps
   asChild?: boolean;
   helperText?: React.ReactNode;
   errorText?: React.ReactNode;
+  invalid?: boolean;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { className, type, asChild, helperText, errorText, invalid, ...props },
+    { className, type, asChild, helperText, errorText, invalid, variant, size, ...props },
     ref
   ) => {
     const Comp = asChild ? Slot : "input";
@@ -43,11 +44,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="grid gap-1.5">
         <Comp
-          className={cn(inputVariants({ className }))}
+          className={cn(inputVariants({ variant, size, className }))}
           type={type}
           ref={ref}
-          aria-invalid={isInvalid}
           {...props}
+          aria-invalid={isInvalid}
         />
         {helperText && !isInvalid && (
           <p className="text-sm text-muted-foreground">{helperText}</p>
@@ -67,11 +68,12 @@ export interface TextareaProps
   asChild?: boolean;
   helperText?: React.ReactNode;
   errorText?: React.ReactNode;
+  invalid?: boolean;
 }
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (
-    { className, asChild, helperText, errorText, invalid, ...props },
+    { className, asChild, helperText, errorText, invalid, variant, size, ...props },
     ref
   ) => {
     const Comp = asChild ? Slot : "textarea";
@@ -80,10 +82,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div className="grid gap-1.5">
         <Comp
-          className={cn(inputVariants({ className }), "min-h-[60px]")}
+          className={cn(inputVariants({ variant, size, className }), "min-h-[60px]")}
           ref={ref}
-          aria-invalid={isInvalid}
           {...props}
+          aria-invalid={isInvalid}
         />
         {helperText && !isInvalid && (
           <p className="text-sm text-muted-foreground">{helperText}</p>
