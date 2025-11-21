@@ -1,26 +1,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 
-const featuredPosts = [
-  {
-    slug: 'first-post',
-    title: 'My First Blog Post',
-    description: 'This is an exciting journey into the world of blogging with Next.js and Gemini CLI.',
-    date: 'November 15, 2025',
-  },
-  {
-    slug: 'next-steps',
-    title: 'Taking the Next Steps with Waspbot',
-    description: 'Exploring advanced features and integrations for our AI-powered assistant.',
-    date: 'November 20, 2025',
-  },
-  {
-    slug: 'community-building',
-    title: 'Building a Strong Community Around Waspbot',
-    description: 'Strategies for fostering engagement and collaboration among users.',
-    date: 'November 22, 2025',
-  },
-];
+import { featuredPosts } from '@/lib/blog';
 
 export default function BlogPage() {
   return (
