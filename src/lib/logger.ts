@@ -3,10 +3,11 @@ type LogLevel = 'silent' | 'error' | 'warn' | 'log' | 'debug';
 
 const validLevels: LogLevel[] = ['silent', 'error', 'warn', 'log', 'debug'];
 const envLevel = process.env.LOG_LEVEL as string;
-const LOG_LEVEL: LogLevel = validLevels.includes(envLevel as LogLevel) 
-  ? (envLevel as LogLevel) 
-  : 'log';
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const defaultLogLevel = process.env.LOG_LEVEL ?? (IS_PRODUCTION ? 'silent' : 'log');
+const LOG_LEVEL: LogLevel = validLevels.includes(defaultLogLevel as LogLevel) 
+  ? (defaultLogLevel as LogLevel) 
+  : 'log';
 
 const NOOP = () => {};
 
@@ -23,6 +24,7 @@ function createLogger(namespace: string) {
 
   const shouldLog = (level: LogLevel) => {
     return LOG_LEVELS[level] <= LOG_LEVELS[LOG_LEVEL];
+  }
 
   const error = shouldLog('error') && typeof console !== 'undefined' && console.error
     ? console.error.bind(console, prefix)
@@ -43,5 +45,6 @@ function createLogger(namespace: string) {
   return { error, warn, log, debug };
 }
 
+// Exported logger helpers: error, warn, log, debug
 export const { error, warn, log, debug } = createLogger('app');
 export default createLogger;
