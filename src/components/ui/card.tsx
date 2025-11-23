@@ -34,16 +34,11 @@ type CardOwnProps = VariantProps<typeof cardVariants>;
 type CardProps<T extends CardElement = "div"> =
   VariantProps<typeof cardVariants> &
   { as?: T } &
-  Omit<React.ComponentProps<T>, "as" | "size" | "ref">;
+  React.ComponentPropsWithoutRef<T>;
 
 const Card = React.forwardRef(function Card<T extends CardElement = "div">(
   { className, size, as, ...props }: CardProps<T>,
-  ref: React.ForwardedRef<
-    T extends "div" ? HTMLDivElement
-    : T extends "section" ? HTMLElement
-    : T extends "article" ? HTMLElement
-    : HTMLDivElement
-  >
+  ref: React.ForwardedRef<React.ElementRef<T>>
 ) {
   const Comp = (as ?? "div") as T;
 
