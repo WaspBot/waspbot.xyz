@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
+// import crypto from 'crypto';
 
 export async function POST(request: Request) {
   let email: string;
@@ -43,8 +43,8 @@ export async function POST(request: Request) {
   }
 
   // PII compliant logging
-  const hashedEmail = crypto.createHash('sha256').update(email).digest('hex');
-  console.info(`Newsletter subscription attempt for hashed email: ${hashedEmail}`);
+  // const hashedEmail = crypto.createHash('sha256').update(email).digest('hex');
+  // console.info(`Newsletter subscription attempt for hashed email: ${hashedEmail}`);
 
   // Placeholder for newsletter subscription logic
   await saveEmailToDatabase(email);
