@@ -1,8 +1,45 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+
+const CheckIcon = ({ className, ariaLabel }: { className?: string; ariaLabel: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    viewBox="0 0 20 20"
+    fill="currentColor"
+    role="img"
+    aria-label={ariaLabel}
+  >
+    <path
+      fillRule="evenodd"
+      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
+
+const XIcon = ({ className, ariaLabel }: { className?: string; ariaLabel: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className={className}
+    viewBox="0 0 20 20"
+    fill="currentColor"
+    role="img"
+    aria-label={ariaLabel}
+  >
+    <path
+      fillRule="evenodd"
+      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+      clipRule="evenodd"
+    />
+  </svg>
+);
 
 interface PricingTier {
   name: string;
@@ -44,15 +81,22 @@ const pricingTiers: PricingTier[] = [
 ];
 
 const featureComparison: FeatureComparison[] = [
-  { feature: "Projects", basic: true, pro: true, enterprise: true },
-  { feature: "Analytics", basic: true, pro: true, enterprise: true },
-  { feature: "Support", basic: true, pro: true, enterprise: true },
+  { feature: "Projects (5)", basic: true, pro: false, enterprise: false },
+  { feature: "Projects (25)", basic: false, pro: true, enterprise: false },
+  { feature: "Projects (Unlimited)", basic: false, pro: false, enterprise: true },
+  { feature: "Basic Analytics", basic: true, pro: false, enterprise: false },
+  { feature: "Advanced Analytics", basic: false, pro: true, enterprise: false },
+  { feature: "Real-time Analytics", basic: false, pro: false, enterprise: true },
+  { feature: "Community Support", basic: true, pro: false, enterprise: false },
+  { feature: "Priority Support", basic: false, pro: true, enterprise: false },
+  { feature: "24/7 Dedicated Support", basic: false, pro: false, enterprise: true },
   { feature: "Custom Integrations", basic: false, pro: true, enterprise: true },
   { feature: "SLA", basic: false, pro: false, enterprise: true },
   { feature: "On-premise Deployment", basic: false, pro: false, enterprise: true },
 ];
 
 export default function PricingPage() {
+  const router = useRouter();
   return (
     <div className="container py-12">
       <h1 className="text-4xl font-bold text-center mb-8">Pricing Plans</h1>
@@ -71,25 +115,24 @@ export default function PricingPage() {
               <ul className="space-y-2">
                 {tier.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 text-green-500 mr-2"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                  <CheckIcon className="h-5 w-5 text-green-500 mr-2" ariaLabel="Feature available" />
                     {feature}
                   </li>
                 ))}
               </ul>
             </CardContent>
             <CardFooter className="mt-auto">
-              <Button variant={tier.buttonVariant} className="w-full">
+              <Button
+                variant={tier.buttonVariant}
+                className="w-full"
+                onClick={() => {
+                  if (tier.name === "Enterprise") {
+                    window.location.href = "mailto:sales@waspbot.xyz";
+                  } else {
+                    router.push(`/signup?plan=${tier.name.toLowerCase()}`);
+                  }
+                }}
+              >
                 {tier.buttonText}
               </Button>
             </CardFooter>
@@ -114,89 +157,23 @@ export default function PricingPage() {
                 <td className="py-4 px-6">{item.feature}</td>
                 <td className="py-4 px-6 text-center">
                   {item.basic ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-green-500 mx-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <CheckIcon className="h-6 w-6 text-green-500 mx-auto" ariaLabel="Available" />
                   ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-red-500 mx-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <XIcon className="h-6 w-6 text-red-500 mx-auto" ariaLabel="Not available" />
                   )}
                 </td>
                 <td className="py-4 px-6 text-center">
                   {item.pro ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-green-500 mx-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <CheckIcon className="h-6 w-6 text-green-500 mx-auto" ariaLabel="Available" />
                   ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-red-500 mx-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <XIcon className="h-6 w-6 text-red-500 mx-auto" ariaLabel="Not available" />
                   )}
                 </td>
                 <td className="py-4 px-6 text-center">
                   {item.enterprise ? (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-green-500 mx-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <CheckIcon className="h-6 w-6 text-green-500 mx-auto" ariaLabel="Available" />
                   ) : (
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6 text-red-500 mx-auto"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <XIcon className="h-6 w-6 text-red-500 mx-auto" ariaLabel="Not available" />
                   )}
                 </td>
               </tr>
