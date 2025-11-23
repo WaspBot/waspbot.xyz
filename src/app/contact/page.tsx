@@ -1,19 +1,22 @@
 "use client";
 
+import { z } from "zod";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  interface FormErrors {
-    name?: string;
-    email?: string;
-    message?: string;
-  }
+interface FormErrors {
+  name?: string;
+  email?: string;
+  message?: string;
+  general?: string;
+}
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,14 +27,14 @@ export default function ContactPage() {
     if (!name) newErrors.name = "Name is required";
     if (!email) {
       newErrors.email = "Email is required";
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
+    } else if (!z.string().email().safeParse(email).success) {
       newErrors.email = "Invalid email address";
     }
     if (!message) newErrors.message = "Message is required";
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
@@ -39,15 +42,30 @@ export default function ContactPage() {
     } else {
       setErrors({});
       setIsSubmitting(true);
-      // Simulate API call
-      setTimeout(() => {
-        console.log({ name, email, message });
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, message }),
+        });
+
+        if (response.ok) {
+          setSubmitSuccess(true);
+          setName("");
+          setEmail("");
+          setMessage("");
+        } else {
+          const errorData = await response.json();
+          setErrors(errorData.errors || { general: errorData.message || "An unexpected error occurred." });
+        }
+      } catch (error) {
+        console.error("Network error:", error);
+        setErrors({ general: "Failed to connect to the server. Please try again later." });
+      } finally {
         setIsSubmitting(false);
-        setSubmitSuccess(true);
-        setName("");
-        setEmail("");
-        setMessage("");
-      }, 1500);
+      }
     }
   };
 
@@ -62,11 +80,19 @@ export default function ContactPage() {
         </CardHeader>
         <CardContent>
           {submitSuccess ? (
-            <div className="text-center text-green-600 font-semibold">
-              Thank you for your message! We will get back to you shortly.
+            <div>
+              <div className="text-center text-green-600 font-semibold">
+                Thank you for your message! We will get back to you shortly.
+              </div>
+              <Button onClick={() => setSubmitSuccess(false)} className="w-full mt-4">
+                Send Another Message
+              </Button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
+              {errors.general && (
+                <p className="mt-2 text-sm text-red-600 text-center">{errors.general}</p>
+              )}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Name
@@ -77,8 +103,14 @@ export default function ContactPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="mt-1 block w-full"
+                  aria-invalid={Boolean(errors.name)}
+                  aria-describedby="name-error"
                 />
-                {errors.name && <p className="mt-2 text-sm text-red-600">{errors.name}</p>}
+                {errors.name && (
+                  <p id="name-error" role="alert" className="mt-2 text-sm text-red-600">
+                    {errors.name}
+                  </p>
+                )}
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -90,21 +122,33 @@ export default function ContactPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="mt-1 block w-full"
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby="email-error"
                 />
-                {errors.email && <p className="mt-2 text-sm text-red-600">{errors.email}</p>}
+                {errors.email && (
+                  <p id="email-error" role="alert" className="mt-2 text-sm text-red-600">
+                    {errors.email}
+                  </p>
+                )}
               </div>
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Message
                 </label>
-                <textarea
+                <Textarea
                   id="message"
                   rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
-                ></textarea>
-                {errors.message && <p className="mt-2 text-sm text-red-600">{errors.message}</p>}
+                  className="mt-1 block w-full"
+                  aria-invalid={Boolean(errors.message)}
+                  aria-describedby="message-error"
+                ></Textarea>
+                {errors.message && (
+                  <p id="message-error" role="alert" className="mt-2 text-sm text-red-600">
+                    {errors.message}
+                  </p>
+                )}
               </div>
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Sending..." : "Send Message"}
