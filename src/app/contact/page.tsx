@@ -24,13 +24,17 @@ interface FormErrors {
 
   const validate = (): FormErrors => {
     let newErrors: FormErrors = {};
-    if (!name) newErrors.name = "Name is required";
-    if (!email) {
+    const tName = name.trim();
+    const tEmail = email.trim();
+    const tMessage = message.trim();
+
+    if (!tName) newErrors.name = "Name is required";
+    if (!tEmail) {
       newErrors.email = "Email is required";
-    } else if (!z.string().email().safeParse(email).success) {
+    } else if (!z.string().email().safeParse(tEmail).success) {
       newErrors.email = "Invalid email address";
     }
-    if (!message) newErrors.message = "Message is required";
+    if (!tMessage) newErrors.message = "Message is required";
     return newErrors;
   };
 
