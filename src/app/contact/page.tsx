@@ -61,7 +61,9 @@ interface FormErrors {
           setErrors(errorData.errors || { general: errorData.message || "An unexpected error occurred." });
         }
       } catch (error) {
-        console.error("Network error:", error);
+        if (process.env.NODE_ENV !== 'production') {
+          console.error("Network error:", error);
+        }
         setErrors({ general: "Failed to connect to the server. Please try again later." });
       } finally {
         setIsSubmitting(false);
