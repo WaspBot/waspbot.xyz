@@ -2,18 +2,22 @@ import { FaqAccordion } from "@/components/ui/faq-accordion";
 
 const faqItems = [
   {
+    id: "faq-1",
     question: "What is Waspbot?",
     answer: "Waspbot is an AI-powered assistant designed to streamline your workflow and automate repetitive tasks.",
   },
   {
+    id: "faq-2",
     question: "How can Waspbot help my business?",
     answer: "Waspbot can help your business by automating customer support, generating reports, managing schedules, and much more, freeing up your team to focus on strategic initiatives.",
   },
   {
+    id: "faq-3",
     question: "Is Waspbot easy to integrate with existing systems?",
     answer: "Yes, Waspbot is designed for seamless integration with a wide range of existing business tools and platforms through its flexible API and pre-built connectors.",
   },
   {
+    id: "faq-4",
     question: "What kind of support does Waspbot offer?",
     answer: "Waspbot offers 24/7 customer support, including online documentation, tutorials, and direct access to our support team for any technical assistance or queries.",
   },
