@@ -1,7 +1,5 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
 import eslintPluginPrettier from "eslint-plugin-prettier";
+import nextPlugin from "eslint-plugin-next";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,7 +9,8 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  nextPlugin.configs.recommended,
+  nextPlugin.configs["core-web-vitals"],
   ...compat.extends("prettier"),
   {
     ignores: [
@@ -31,5 +30,3 @@ const eslintConfig = [
     },
   },
 ];
-
-export default eslintConfig;
