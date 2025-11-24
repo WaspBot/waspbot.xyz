@@ -17,18 +17,21 @@ interface Integration {
 const integrations: Integration[] = [
   {
     id: "1",
+    name: "Stripe",
     logo: "/logos/stripe.svg",
     description: "Online payment processing for internet businesses.",
     categories: ["Payments", "Finance"],
   },
   {
     id: "2",
+    name: "Shopify",
     logo: "/logos/shopify.svg",
     description: "E-commerce platform for online stores and retail point-of-sale systems.",
     categories: ["E-commerce", "Retail"],
   },
   {
     id: "3",
+    name: "Slack",
     logo: "/logos/slack.svg",
     description: "A channel-based messaging platform.",
     categories: ["Communication", "Productivity"],
