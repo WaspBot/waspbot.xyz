@@ -17,36 +17,33 @@ interface Integration {
 const integrations: Integration[] = [
   {
     id: "1",
-    name: "Stripe",
-    logo: "/next.svg", // Placeholder logo
+    logo: "/logos/stripe.svg",
     description: "Online payment processing for internet businesses.",
     categories: ["Payments", "Finance"],
   },
   {
     id: "2",
-    name: "Shopify",
-    logo: "/next.svg", // Placeholder logo
+    logo: "/logos/shopify.svg",
     description: "E-commerce platform for online stores and retail point-of-sale systems.",
     categories: ["E-commerce", "Retail"],
   },
   {
     id: "3",
-    name: "Slack",
-    logo: "/next.svg", // Placeholder logo
+    logo: "/logos/slack.svg",
     description: "A channel-based messaging platform.",
     categories: ["Communication", "Productivity"],
   },
   {
     id: "4",
     name: "Google Analytics",
-    logo: "/next.svg", // Placeholder logo
+    logo: "/logos/google-analytics.svg",
     description: "Web analytics service that tracks and reports website traffic.",
     categories: ["Analytics", "Marketing"],
   },
   {
     id: "5",
     name: "Mailchimp",
-    logo: "/next.svg", // Placeholder logo
+    logo: "/logos/mailchimp.svg",
     description: "Email marketing and automation platform.",
     categories: ["Marketing", "Email"],
   },
@@ -102,6 +99,8 @@ export default function IntegrationsPage() {
                 width={48}
                 height={48}
                 className="rounded-full"
+                unoptimized
+                loading="lazy"
               />
               <div className="flex flex-col">
                 <CardTitle>{integration.name}</CardTitle>
