@@ -1,3 +1,7 @@
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { FlatCompat } from '@eslint/eslintrc';
+
 import eslintPluginPrettier from "eslint-plugin-prettier";
 import nextPlugin from "eslint-plugin-next";
 

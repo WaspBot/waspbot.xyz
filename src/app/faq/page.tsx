@@ -1,12 +1,33 @@
-"use client";
+import { FaqAccordion } from "@/components/ui/faq-accordion";
 
-export default function FAQPage() {
+const faqItems = [
+  {
+    id: "faq-1",
+    question: "What is Waspbot?",
+    answer: "Waspbot is an AI-powered assistant designed to streamline your workflow and automate repetitive tasks.",
+  },
+  {
+    id: "faq-2",
+    question: "How can Waspbot help my business?",
+    answer: "Waspbot can help your business by automating customer support, generating reports, managing schedules, and much more, freeing up your team to focus on strategic initiatives.",
+  },
+  {
+    id: "faq-3",
+    question: "Is Waspbot easy to integrate with existing systems?",
+    answer: "Yes, Waspbot is designed for seamless integration with a wide range of existing business tools and platforms through its flexible API and pre-built connectors.",
+  },
+  {
+    id: "faq-4",
+    question: "What kind of support does Waspbot offer?",
+    answer: "Waspbot offers 24/7 customer support, including online documentation, tutorials, and direct access to our support team for any technical assistance or queries.",
+  },
+];
+
+export default function FaqPage() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] py-12 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-4xl font-bold text-center">Frequently Asked Questions</h1>
-      <p className="mt-4 text-lg text-center text-gray-600 dark:text-gray-400">
-        This is a placeholder for the FAQ page.
-      </p>
-    </div>
+    <section className="container py-12">
+      <h1 className="mb-8 text-4xl font-bold">Frequently Asked Questions</h1>
+      <FaqAccordion items={faqItems} />
+    </section>
   );
 }
