@@ -1,3 +1,4 @@
+"use client";
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -49,12 +50,14 @@ type ChannelFilter = 'all' | Release['channel'];
 const ChangelogPage = () => {
   const [filter, setFilter] = useState<ChannelFilter>('all');
 
-  const filteredReleases = mockReleases.filter((release) => {
-    if (filter === 'all') {
-      return true;
-    }
-    return release.channel === filter;
-  });
+  const sortedAndFilteredReleases = [...mockReleases]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .filter((release) => {
+      if (filter === 'all') {
+        return true;
+      }
+      return release.channel === filter;
+    });
 
   return (
     <div className="container mx-auto py-8">
@@ -74,7 +77,7 @@ const ChangelogPage = () => {
         </Button>
       </div>
       <div className="space-y-4">
-        {filteredReleases.map((release) => (
+        {sortedAndFilteredReleases.map((release) => (
           <Card key={release.id}>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>
