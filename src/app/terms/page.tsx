@@ -1,9 +1,15 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { LEGAL_DOCUMENTS } from "@/config/legal";
+
+export const metadata = {
+  title: "Terms of Service | Waspbot",
+  description: "Read our Terms of Service governing the use of Waspbot website and services.",
+};
 
 export default function TermsPage() {
-  const lastUpdatedDate = "December 1, 2025"; // Hardcoded for now
+  const lastUpdatedDate = LEGAL_DOCUMENTS.termsOfService.lastUpdated;
 
   return (
     <div className="container mx-auto py-12 px-4 max-w-3xl">
@@ -180,9 +186,9 @@ export default function TermsPage() {
         <h2 className="text-2xl font-semibold mb-4">8. Contact Us</h2>
         <p className="text-lg leading-relaxed">
           If you have any questions about these Terms, please contact us at
-          <Link href="mailto:support@waspbot.xyz" className="text-primary hover:underline ml-1">
+          <a href="mailto:support@waspbot.xyz" className="text-primary hover:underline ml-1">
             support@waspbot.xyz
-          </Link>
+          </a>
           .
         </p>
       </section>
