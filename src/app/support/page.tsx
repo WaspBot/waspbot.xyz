@@ -4,14 +4,17 @@ import { FaqAccordion } from "@/components/ui/faq-accordion";
 
 const faqItems = [
   {
+    id: "faq-1",
     question: "What are your support hours?",
     answer: "Our support team is available Monday to Friday, 9 AM - 5 PM EST.",
   },
   {
+    id: "faq-2",
     question: "How long does it take to get a response?",
     answer: "We aim to respond to all email inquiries within 24 hours during business days. Chat support is typically real-time.",
   },
   {
+    id: "faq-3",
     question: "Do you offer weekend support?",
     answer: "Currently, weekend support is not available, but critical issues are monitored.",
   },
@@ -43,6 +46,8 @@ export default function SupportPage() {
                   Email Us
                 </Link>
               </div>
+              {/* Live Chat section temporarily hidden as chat integration URL is not available */}
+              {/*
               <div className="p-4 border rounded-lg shadow-sm">
                 <h3 className="font-semibold text-xl mb-2">Live Chat</h3>
                 <p className="text-gray-600 dark:text-gray-400">
@@ -52,6 +57,7 @@ export default function SupportPage() {
                   Start Chat
                 </Link>
               </div>
+              */}
               <div className="p-4 border rounded-lg shadow-sm">
                 <h3 className="font-semibold text-xl mb-2">Phone Support</h3>
                 <p className="text-gray-600 dark:text-gray-400">
