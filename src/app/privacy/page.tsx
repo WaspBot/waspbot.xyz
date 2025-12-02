@@ -66,10 +66,7 @@ export default function PrivacyPage() {
           <li>To facilitate account creation and logon process.</li>
           <li>To send you marketing and promotional communications.</li>
           <li>To send administrative information to you.</li>
-          <li>To fulfill and manage your orders.</li>
-          <li>To post testimonials with your consent.</li>
           <li>To protect our Services.</li>
-          <li>To enable user-to-user communications.</li>
           <li>To enforce our terms, conditions and policies.</li>
           <li>To respond to legal requests and prevent harm.</li>
           <li>To manage user accounts.</li>
@@ -84,7 +81,7 @@ export default function PrivacyPage() {
           We may use cookies, web beacons, tracking pixels, and other tracking technologies on the Site to help customize the Site and improve your experience. When you access the Site, your personal information is not collected through the use of tracking technology. Most browsers are set to accept cookies by default. You can remove or reject cookies, but be aware that such action could affect the availability and functionality of the Site.
         </p>
         <p className="text-lg leading-relaxed">
-          For more information on how we use cookies, please refer to our Cookie Policy [Link to Cookie Policy - if applicable].
+          For more information on how we use cookies, please contact us at <a href="mailto:support@waspbot.xyz" className="text-primary hover:underline">support@waspbot.xyz</a>.
         </p>
       </section>
 
