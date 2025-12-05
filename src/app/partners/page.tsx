@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"; // Assuming Avatar component exists
+import Link from "next/link";
 
 export default function PartnersPage() {
   const partnerLogos = [
@@ -15,22 +15,7 @@ export default function PartnersPage() {
     { name: "Mailchimp", logo: "/logos/mailchimp.svg" },
   ];
 
-  const testimonials = [
-    {
-      id: "1",
-      name: "John Doe",
-      title: "CEO, Example Corp",
-      avatar: "https://github.com/shadcn.png",
-      quote: "Working with Waspbot has been a game-changer for our business. Their strategic partnership has significantly boosted our reach and efficiency.",
-    },
-    {
-      id: "2",
-      name: "Jane Smith",
-      title: "Marketing Director, Another Co.",
-      avatar: "https://github.com/shadcn.png",
-      quote: "The collaboration with Waspbot brought immense value. Their innovative solutions and dedicated team are truly remarkable.",
-    },
-  ];
+  const testimonials = [];
 
   return (
     <div className="container mx-auto py-8">
@@ -85,9 +70,11 @@ export default function PartnersPage() {
         <p className="text-lg text-muted-foreground mb-6">
           Join our growing network of strategic partners and achieve mutual success.
         </p>
-        <Button size="lg" className="px-8 py-3">
-          Contact Us
-        </Button>
+        <Link href="/contact">
+          <Button size="lg" className="px-8 py-3">
+            Contact Us
+          </Button>
+        </Link>
       </section>
     </div>
   );
