@@ -97,6 +97,7 @@ export const AnnouncementBar = ({
         size="icon"
         className="absolute right-2 top-1/2 -translate-y-1/2 h-auto w-auto text-primary-foreground/80 hover:bg-transparent hover:text-primary-foreground"
         onClick={handleClose}
+        aria-label="Close announcement"
       >
         <X className="h-4 w-4" />
       </Button>
